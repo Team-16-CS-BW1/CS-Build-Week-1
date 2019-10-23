@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
-from adventure.models import Player, Room
+from adventure.models import Player, Room, World
 import random
 
 
 Room.objects.all().delete()
-
+#instantiate list of lists (list of rows) for the initial 15x15 grid filled w/ None objects in each position
 world_matrix = [[None for _ in range(15)] for _ in range(15)]
 #pick a random point in the grid, place a room there, and implement random walk algo to build rooms
 start_x = random.choice(range(15))
@@ -14,7 +14,7 @@ x = start_x
 y = start_y
 #initialize room counter at 1
 room_count = 1
-#instantiate first room and save
+#instantiate first room at the starting position and save to the db
 room = Room(title = f'room{room_count}', description = f'desc{room_count}', x=x, y=y)
 room.save()
 #update the world_matrix position at x and y w/ the newly created room object
@@ -63,6 +63,8 @@ for p in players:
 	p.save()
 
 
+
+#### Old code for creatingthe 10x10 grid of fully connected rooms ####
 
 # #start at 0,0 iterate across until x reaches 10, then move up one row
 # room_coords = []

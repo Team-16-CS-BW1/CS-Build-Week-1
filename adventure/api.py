@@ -14,13 +14,26 @@ import json
 @csrf_exempt
 @api_view(["GET"])
 def initialize(request):
-    user = request.user
-    player = user.player
-    player_id = player.id
-    uuid = player.uuid
-    room = player.room()
-    players = room.playerNames(player_id)
-    return JsonResponse({'uuid': uuid, 'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players}, safe=True)
+	user = request.user
+	player = user.player
+	player_id = player.id
+	uuid = player.uuid
+	room = player.room()
+	### trying out map stuff here:
+	rooms = Room.objects.all()
+	world_map = {
+		"rooms": [{
+			'id': i.id,
+			'x': i.x,
+			'y': i.y,
+			'n_to': i.n_to,
+			's_to': i.s_to,
+			'e_to': i.e_to,
+			'w_to': i.w_to,
+			} for i in rooms]
+			}
+	players = room.playerNames(player_id)
+	return JsonResponse({'uuid': uuid, 'name':player.user.username, 'title':room.title, 'description':room.description, 'players':players, 'world_map':world_map}, safe=True)
 
 
 # @csrf_exempt
