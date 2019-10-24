@@ -24,7 +24,7 @@ def initialize(request):
     rooms = Room.objects.all()
     world_map = {
         "rooms": [
-                {i.id: {
+                {
                     'id': i.id,
                     'x': i.x,
                     'y': i.y,
@@ -32,7 +32,7 @@ def initialize(request):
                     's_to': i.s_to,
                     'e_to': i.e_to,
                     'w_to': i.w_to,
-                }} for i in rooms]
+                } for i in rooms]
     }
     players = room.playerNames(player_id)
     return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players, 'world_map': world_map}, safe=True)
