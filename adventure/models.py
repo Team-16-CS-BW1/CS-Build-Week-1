@@ -12,6 +12,8 @@ class Room(models.Model):
     s_to = models.IntegerField(default=0)
     e_to = models.IntegerField(default=0)
     w_to = models.IntegerField(default=0)
+    x = models.IntegerField(default=0)
+    y = models.IntegerField(default=0)
     def connectRooms(self, destinationRoom, direction):
         destinationRoomID = destinationRoom.id
         try:
@@ -35,6 +37,16 @@ class Room(models.Model):
         return [p.user.username for p in Player.objects.filter(currentRoom=self.id) if p.id != int(currentPlayerID)]
     def playerUUIDs(self, currentPlayerID):
         return [p.uuid for p in Player.objects.filter(currentRoom=self.id) if p.id != int(currentPlayerID)]
+    def items(self):
+        items = []
+        room_items = [room_item for room_item in RoomItem.objects.filter(room=self)]
+        for room_item in room_items:
+            items.append({
+                "id": room_item.item.id,
+                "title": room_item.item.title,
+                "description": room_item.item.description
+                })
+        return items
 
 
 class Player(models.Model):
@@ -51,6 +63,27 @@ class Player(models.Model):
         except Room.DoesNotExist:
             self.initialize()
             return self.room()
+    def items(self):
+        items = []
+        player_items = [player_item for player_item in PlayerItem.objects.filter(player=self)]
+        for player_item in player_items:
+            items.append({"id": player_item.item.id,
+                         "title": player_item.item.title,
+                         "description": player_item.item.description
+                         })
+        return items
+
+class Item(models.Model):
+    title = models.CharField(max_length=50, default="DEFAULT TITLE")
+    description = models.CharField(max_length=500, default="DEFAULT DESCRIPTION")
+
+class RoomItem(models.Model):
+    room = models.ForeignKey('Room', on_delete=models.CASCADE)
+    item = models.ForeignKey('Item', on_delete=models.CASCADE)
+
+class PlayerItem(models.Model):
+    player = models.ForeignKey('Player', on_delete=models.CASCADE)
+    item = models.ForeignKey('Item', on_delete=models.CASCADE)
 
 @receiver(post_save, sender=User)
 def create_user_player(sender, instance, created, **kwargs):
@@ -61,8 +94,3 @@ def create_user_player(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_player(sender, instance, **kwargs):
     instance.player.save()
-
-
-
-
-
