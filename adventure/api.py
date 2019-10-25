@@ -58,15 +58,6 @@ def move(request):
     data = json.loads(request.body)
     direction = data['direction']
     room = player.room()
-    current_room = {
-        'id': room.id,
-        'x': room.x,
-        'y': room.y,
-        'n_to': room.n_to,
-        's_to': room.s_to,
-        'e_to': room.e_to,
-        'w_to': room.w_to,
-    }
     nextRoomID = None
     if direction == "n":
         nextRoomID = room.n_to
@@ -80,6 +71,16 @@ def move(request):
         nextRoom = Room.objects.get(id=nextRoomID)
         player.currentRoom = nextRoomID
         player.save()
+        room = player.room()
+        current_room = {
+            'id': room.id,
+            'x': room.x,
+            'y': room.y,
+            'n_to': room.n_to,
+            's_to': room.s_to,
+            'e_to': room.e_to,
+            'w_to': room.w_to,
+        }
         players = nextRoom.playerNames(player_id)
         currentPlayerUUIDs = room.playerUUIDs(player_id)
         nextPlayerUUIDs = nextRoom.playerUUIDs(player_id)
